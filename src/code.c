@@ -93,6 +93,10 @@ int code_print_instruction(Code *code, Word ip) {
 		case OP_NEW_ENV: printf("\e[34mOP_NEW_ENV\e[0m       ┃"); break;
 		case OP_JUMP: printf("\e[34mOP_JUMP\e[0m          ┃ \e[2mto:\e[0m %04d", code_read_word(code, &ip)); break;
 		case OP_JUMP_IF_FALSE: printf("\e[34mOP_JUMP_IF_FALSE\e[0m ┃ \e[2mto:\e[0m %04d", code_read_word(code, &ip)); break;
+		case OP_ADD: printf("\e[34mOP_ADD\e[0m           ┃ \e[2marg count:\e[0m %d", code_read_word(code, &ip)); break;
+		case OP_SUB: printf("\e[34mOP_SUB\e[0m           ┃ \e[2marg count:\e[0m %d", code_read_word(code, &ip)); break;
+		case OP_MUL: printf("\e[34mOP_MUL\e[0m           ┃ \e[2marg count:\e[0m %d", code_read_word(code, &ip)); break;
+		case OP_DIV: printf("\e[34mOP_DIV\e[0m           ┃ \e[2marg count:\e[0m %d", code_read_word(code, &ip)); break;
 	}
 
 	return ip - oldIp;

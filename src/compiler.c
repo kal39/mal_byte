@@ -161,6 +161,22 @@ static Status _compile_fn(Code *code, Scanner *scanner) {
 	return ok();
 }
 
+static Status _compile_builtin_function_call(Code *code, Scanner *scanner, OpCode function) {
+	// compile arguments
+	Word argCount = 0;
+	for (;; argCount++) {
+		if (IS_END_TOKEN(scanner_peek(scanner))) return error("unterminated list");
+		if (_is_list_end(scanner_peek(scanner))) break;
+		Status status = _compile(code, scanner);
+		if (!status.ok) return status;
+	}
+
+	code_write(code, function);
+	code_write_word(code, argCount);
+
+	return ok();
+}
+
 static Status _compile_fn_call(Code *code, Scanner *scanner, Token token) {
 	// if not a built-in keyword, it must be a function
 	if (_is_list_start(token)) {
@@ -224,6 +240,10 @@ static Status _compile_list(Code *code, Scanner *scanner) {
 	else if (_matches(token, "fn")) status = _compile_fn(code, scanner);
 	else if (_matches(token, "eval")) status = error("\"eval\" not yet implemented");	// TODO implement
 	else if (_matches(token, "quote")) status = error("\"quote\" not yet implemented"); // TODO implement
+	else if (_matches(token, "+")) status = _compile_builtin_function_call(code, scanner, OP_ADD);
+	else if (_matches(token, "-")) status = _compile_builtin_function_call(code, scanner, OP_SUB);
+	else if (_matches(token, "*")) status = _compile_builtin_function_call(code, scanner, OP_MUL);
+	else if (_matches(token, "/")) status = _compile_builtin_function_call(code, scanner, OP_DIV);
 	else status = _compile_fn_call(code, scanner, token);
 
 	if (!_is_list_end(scanner_next(scanner))) status = error("expected ')'");

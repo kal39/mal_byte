@@ -13,7 +13,7 @@ int main(void) {
 	// Status error = compile(code, "((fn (a b) (+ a b)) 2 3)");
 	// Status error = compile(code, "(def add_1 (fn (a) (+ a 1))) (add_1 6)");
 	// Status error = compile(code, "(if false 2 3)");
-	Status error = compile(code, "(def fib (fn (i) (if (< i 2) i (+ (fib (- i 1)) (fib(- i 2)))))) (print (fib 20) \"\n\")");
+	Status error = compile(code, "(def fib (fn (i) (if (< i 2) i (+ (fib (- i 1)) (fib(- i 2)))))) (println (fib 30))");
 
 	if (!error.ok) {
 		printf("ERROR: %s\n", error.errorMessage);

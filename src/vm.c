@@ -115,6 +115,77 @@ Status vm_run(VM *vm, Env *env, Code *code) {
 					case VALUE_FALSE: vm->ip = ip; break;
 					default: return error("expected true or false");
 				}
+				break;
+			}
+			case OP_ADD: {
+				int argCount = code_read_word(code, &vm->ip);
+				Number result = 0.0;
+				for (int i = 0; i < argCount; i++) {
+					Value value = stack_pop(vm->stack);
+					if (value.type != VALUE_NUMBER) return error("expected number");
+					result += value.as.number;
+				}
+				stack_push(vm->stack, value_make_number(result));
+				break;
+			}
+			case OP_SUB: {
+				int argCount = code_read_word(code, &vm->ip);
+				switch (argCount) {
+					case 0: return error("expected 1+ arguments");
+					case 1: {
+						Value value = stack_pop(vm->stack);
+						if (value.type != VALUE_NUMBER) return error("expected number");
+						stack_push(vm->stack, value_make_number(-value.as.number));
+						break;
+					}
+					default: {
+						Number result = 0.0;
+						for (int i = 0; i < argCount - 1; i++) {
+							Value value = stack_pop(vm->stack);
+							if (value.type != VALUE_NUMBER) return error("expected number");
+							result += value.as.number;
+						}
+						Value value = stack_pop(vm->stack);
+						if (value.type != VALUE_NUMBER) return error("expected number");
+						stack_push(vm->stack, value_make_number(value.as.number - result));
+					}
+				}
+				break;
+			}
+			case OP_MUL: {
+				int argCount = code_read_word(code, &vm->ip);
+				Number result = 1.0;
+				for (int i = 0; i < argCount; i++) {
+					Value value = stack_pop(vm->stack);
+					if (value.type != VALUE_NUMBER) return error("expected number");
+					result *= value.as.number;
+				}
+				stack_push(vm->stack, value_make_number(result));
+				break;
+			}
+			case OP_DIV: {
+				int argCount = code_read_word(code, &vm->ip);
+				switch (argCount) {
+					case 0: return error("expected 1+ arguments");
+					case 1: {
+						Value value = stack_pop(vm->stack);
+						if (value.type != VALUE_NUMBER) return error("expected number");
+						stack_push(vm->stack, value_make_number(1.0 / value.as.number));
+						break;
+					}
+					default: {
+						Number result = 1.0;
+						for (int i = 0; i < argCount - 1; i++) {
+							Value value = stack_pop(vm->stack);
+							if (value.type != VALUE_NUMBER) return error("expected number");
+							result *= value.as.number;
+						}
+						Value value = stack_pop(vm->stack);
+						if (value.type != VALUE_NUMBER) return error("expected number");
+						stack_push(vm->stack, value_make_number(value.as.number / result));
+					}
+				}
+				break;
 			}
 		}
 

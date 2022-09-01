@@ -22,6 +22,11 @@ typedef enum OpCode {
 
 	OP_JUMP,
 	OP_JUMP_IF_FALSE,
+
+	OP_ADD,
+	OP_SUB,
+	OP_MUL,
+	OP_DIV,
 } OpCode;
 
 typedef struct Code {
