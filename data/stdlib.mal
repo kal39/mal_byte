@@ -1,0 +1,1 @@
+(def parse-file (fn (file) (parse-string (string "(do " (read-file file) ")"))))

@@ -1,0 +1,2 @@
+(def load-file (fn (file) (load-string (string "(do " (read-file file) ")"))))
+(eval (load-file "tests/fib.mal"))

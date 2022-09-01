@@ -1,0 +1,1 @@
+(def sum (fn (val) (if (= val nil) 0 (+ (first val) (sum (rest val))))))
