@@ -3,22 +3,16 @@
 
 Stack *stack_create() {
 	Stack *stack = malloc(sizeof(Stack));
-	stack->capacity = 8;
 	stack->size = 0;
-	stack->values = malloc(sizeof(Value) * stack->capacity);
 	return stack;
 }
 
 void stack_destroy(Stack *stack) {
-	if (stack->values != NULL) free(stack->values);
 	if (stack != NULL) free(stack);
-
-	stack->values = NULL;
 	stack = NULL;
 }
 
 void stack_push(Stack *stack, Value value) {
-	if (stack->size == stack->capacity) stack->values = realloc(stack->values, sizeof(Value) * (stack->capacity *= 2));
 	stack->values[stack->size++] = value;
 }
 

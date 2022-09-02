@@ -31,14 +31,14 @@ static bool _is_number(Token token) {
 }
 
 static Status _compile(Code *code, Scanner *scanner);
-static ValueType _compile_atom(Code *code, Token token);
+static bool _compile_atom(Code *code, Token token);
 static Status _compile_list(Code *code, Scanner *scanner);
 
 static Status _compile_def(Code *code, Scanner *scanner) {
 	for (;;) {
 		// compile key
 		Token key = scanner_next(scanner);
-		if (_compile_atom(code, key) != VALUE_SYMBOL) return error("expected symbol");
+		if (!_compile_atom(code, key)) return error("expected symbol");
 
 		// compile value
 		Status status = _compile(code, scanner);
@@ -62,7 +62,7 @@ static Status _compile_let(Code *code, Scanner *scanner) {
 	while (!_is_list_end(scanner_peek(scanner))) {
 		// compile key
 		Token key = scanner_next(scanner);
-		if (_compile_atom(code, key) != VALUE_SYMBOL) return error("expected symbol");
+		if (!_compile_atom(code, key)) return error("expected symbol");
 
 		// compile value
 		Status status = _compile(code, scanner);
@@ -183,7 +183,7 @@ static Status _compile_fn_call(Code *code, Scanner *scanner, Token token) {
 		// for when the function itself is the result of another operation (eg: ((fn add_1 (a) (+ a 1)) 2) )
 		Status status = _compile_list(code, scanner);
 		if (!status.ok) return status;
-	} else if (_compile_atom(code, token) == VALUE_SYMBOL) {
+	} else if (_compile_atom(code, token)) {
 		code_write(code, OP_GET_SYMBOL);
 	} else {
 		return error("expected symbol");
@@ -204,28 +204,29 @@ static Status _compile_fn_call(Code *code, Scanner *scanner, Token token) {
 	return ok();
 }
 
-static ValueType _compile_atom(Code *code, Token token) {
+// returns true if symbol
+static bool _compile_atom(Code *code, Token token) {
 	if (_matches(token, "nil")) {
 		code_write(code, OP_PUSH_NIL);
-		return VALUE_NIL;
+		return false;
 	} else if (_matches(token, "true")) {
 		code_write(code, OP_PUSH_TRUE);
-		return VALUE_TRUE;
+		return false;
 	} else if (_matches(token, "false")) {
 		code_write(code, OP_PUSH_FALSE);
-		return VALUE_FALSE;
+		return false;
 	} else if (_is_number(token)) {
 		code_write(code, OP_PUSH_NUMBER);
 		code_write_number(code, strtod(token.start, NULL));
-		return VALUE_NUMBER;
+		return false;
 	} else if (_is_string(token)) {
 		code_write(code, OP_PUSH_STRING);
 		code_write_chars(code, token.start + 1, token.length - 2);
-		return VALUE_STRING;
+		return false;
 	} else {
 		code_write(code, OP_PUSH_SYMBOL);
 		code_write_chars(code, token.start, token.length);
-		return VALUE_SYMBOL;
+		return true;
 	}
 }
 
@@ -240,6 +241,11 @@ static Status _compile_list(Code *code, Scanner *scanner) {
 	else if (_matches(token, "fn")) status = _compile_fn(code, scanner);
 	else if (_matches(token, "eval")) status = error("\"eval\" not yet implemented");	// TODO implement
 	else if (_matches(token, "quote")) status = error("\"quote\" not yet implemented"); // TODO implement
+	else if (_matches(token, "=")) status = _compile_builtin_function_call(code, scanner, OP_EQ);
+	else if (_matches(token, "<")) status = _compile_builtin_function_call(code, scanner, OP_LESS);
+	else if (_matches(token, "<=")) status = _compile_builtin_function_call(code, scanner, OP_LESS_EQ);
+	else if (_matches(token, ">")) status = _compile_builtin_function_call(code, scanner, OP_GREATER);
+	else if (_matches(token, ">=")) status = _compile_builtin_function_call(code, scanner, OP_GREATER_EQ);
 	else if (_matches(token, "+")) status = _compile_builtin_function_call(code, scanner, OP_ADD);
 	else if (_matches(token, "-")) status = _compile_builtin_function_call(code, scanner, OP_SUB);
 	else if (_matches(token, "*")) status = _compile_builtin_function_call(code, scanner, OP_MUL);
@@ -257,8 +263,7 @@ static Status _compile(Code *code, Scanner *scanner) {
 	} else if (_is_list_start(token)) {
 		return _compile_list(code, scanner);
 	} else {
-		// for a number, OP_GET_SYMBOL isn't needed
-		if (_compile_atom(code, token) == VALUE_SYMBOL) code_write(code, OP_GET_SYMBOL);
+		if (_compile_atom(code, token)) code_write(code, OP_GET_SYMBOL);
 		return ok();
 	}
 }

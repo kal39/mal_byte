@@ -3,10 +3,11 @@
 
 #include "value.h"
 
+#define STACK_SIZE 2048
+
 typedef struct Stack {
-	int capacity;
 	int size;
-	Value *values;
+	Value values[STACK_SIZE];
 } Stack;
 
 Stack *stack_create();

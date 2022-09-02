@@ -4,8 +4,7 @@
 #include "value.h"
 
 typedef enum OpCode {
-	OP_RETURN,
-
+	// stack
 	OP_POP,
 	OP_PUSH_NIL,
 	OP_PUSH_TRUE,
@@ -14,19 +13,33 @@ typedef enum OpCode {
 	OP_PUSH_NUMBER,
 	OP_PUSH_STRING,
 
+	// env
 	OP_SET_SYMBOL,
 	OP_GET_SYMBOL,
+
+	// function / scope
 	OP_MAKE_FUNCTION,
 	OP_CALL_FUNCTION,
 	OP_NEW_ENV,
+	OP_RETURN,
 
+	// control flow
 	OP_JUMP,
 	OP_JUMP_IF_FALSE,
 
+	// builtin maths
+	OP_EQ,
+	OP_LESS,
+	OP_LESS_EQ,
+	OP_GREATER,
+	OP_GREATER_EQ,
 	OP_ADD,
 	OP_SUB,
 	OP_MUL,
 	OP_DIV,
+
+	// optimizations
+	// OP_PUSH_GET,
 } OpCode;
 
 typedef struct Code {

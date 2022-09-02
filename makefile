@@ -41,7 +41,7 @@ default: clean $(EXECUTABLE)
 debug: CC += -g
 debug: default
 
-profile: CC += -pg
+profile: 
 profile: default 
 	valgrind --tool=callgrind --callgrind-out-file="callgrind.out" ./$(EXECUTABLE)
 	kcachegrind callgrind.out &

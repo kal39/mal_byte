@@ -72,12 +72,11 @@ int code_print_instruction(Code *code, Word ip) {
 
 	printf("┃ %04d ┃ ", ip);
 	switch ((OpCode)code_read(code, &ip)) { // cast to make gcc check that all opcodes are accounted for
-		case OP_RETURN: printf("\e[34mOP_RETURN\e[0m        ┃"); break;
 		case OP_POP: printf("\e[34mOP_POP\e[0m           ┃"); break;
 		case OP_PUSH_NIL: printf("\e[34mOP_PUSH_NIL\e[0m      ┃"); break;
 		case OP_PUSH_TRUE: printf("\e[34mOP_PUSH_TRUE\e[0m     ┃"); break;
 		case OP_PUSH_FALSE: printf("\e[34mOP_PUSH_FALSE\e[0m    ┃"); break;
-		case OP_PUSH_SYMBOL: printf("\e[34mOP_SYMBOL\e[0m        ┃ %s", code_read_chars(code, &ip)); break;
+		case OP_PUSH_SYMBOL: printf("\e[34mOP_PUSH_SYMBOL\e[0m   ┃ %s", code_read_chars(code, &ip)); break;
 		case OP_PUSH_NUMBER: printf("\e[34mOP_PUSH_NUMBER\e[0m   ┃ %g", code_read_number(code, &ip)); break;
 		case OP_PUSH_STRING: printf("\e[34mOP_PUSH_STRING\e[0m   ┃ %s", code_read_chars(code, &ip)); break;
 		case OP_SET_SYMBOL: printf("\e[34mOP_SET_SYMBOL\e[0m    ┃"); break;
@@ -91,8 +90,14 @@ int code_print_instruction(Code *code, Word ip) {
 		}
 		case OP_CALL_FUNCTION: printf("\e[34mOP_CALL_FUNCTION\e[0m ┃ \e[2marg count:\e[0m %d", code_read_word(code, &ip)); break;
 		case OP_NEW_ENV: printf("\e[34mOP_NEW_ENV\e[0m       ┃"); break;
+		case OP_RETURN: printf("\e[34mOP_RETURN\e[0m        ┃"); break;
 		case OP_JUMP: printf("\e[34mOP_JUMP\e[0m          ┃ \e[2mto:\e[0m %04d", code_read_word(code, &ip)); break;
 		case OP_JUMP_IF_FALSE: printf("\e[34mOP_JUMP_IF_FALSE\e[0m ┃ \e[2mto:\e[0m %04d", code_read_word(code, &ip)); break;
+		case OP_EQ: printf("\e[34mOP_EQ\e[0m            ┃ \e[2marg count:\e[0m %d", code_read_word(code, &ip)); break;
+		case OP_LESS: printf("\e[34mOP_LESS\e[0m          ┃ \e[2marg count:\e[0m %d", code_read_word(code, &ip)); break;
+		case OP_LESS_EQ: printf("\e[34mOP_LESS_EQ\e[0m       ┃ \e[2marg count:\e[0m %d", code_read_word(code, &ip)); break;
+		case OP_GREATER: printf("\e[34mOP_GREATER\e[0m       ┃ \e[2marg count:\e[0m %d", code_read_word(code, &ip)); break;
+		case OP_GREATER_EQ: printf("\e[34mOP_GREATER_EQ\e[0m    ┃ \e[2marg count:\e[0m %d", code_read_word(code, &ip)); break;
 		case OP_ADD: printf("\e[34mOP_ADD\e[0m           ┃ \e[2marg count:\e[0m %d", code_read_word(code, &ip)); break;
 		case OP_SUB: printf("\e[34mOP_SUB\e[0m           ┃ \e[2marg count:\e[0m %d", code_read_word(code, &ip)); break;
 		case OP_MUL: printf("\e[34mOP_MUL\e[0m           ┃ \e[2marg count:\e[0m %d", code_read_word(code, &ip)); break;
